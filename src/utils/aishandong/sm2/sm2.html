@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>sm2</title>
+
+    <!-- <script src="js/utils/hex.js"></script>
+    <script src="js/utils/byteUtil.js"></script>
+    <script src="js/crypto/sm3.js"></script>
+    <script src="js/ext/jsbn.js"></script>
+    <script src="js/ext/jsbn2.js"></script>
+    <script src="js/ext/ec.js"></script>
+    <script src="js/ext/ec-patch.js"></script>
+    <script src="js/ext/prng4.js"></script>
+    <script src="js/ext/rng.js"></script>
+    <script src="js/crypto/sm2.js"></script> -->
+    <script src="build/jquery-3.3.1.min.js"></script>
+    <!-- <script src="js/utils/hex.js"></script> -->
+    <script src="build/SM.js"></script>
+
+
+    <style>
+      body {
+        text-align: center;
+      }
+      .div {
+        margin: 0 auto;
+        border: 1px solid #f00;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="text-align: center">
+      <div>
+        <form action="#" method="post">
+          <table style="margin-left: auto; margin-right: auto">
+            <!--border=0 cellpadding=0 cellspacing=0-->
+            <tr>
+              <td style="width: auto; text-align: right">sm2公钥：</td>
+              <td style="text-align: left" valign="middle">
+                <textarea
+                  rows="2"
+                  cols="50"
+                  name="pubkey"
+                  id="pubkey"
+                ></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: auto; text-align: right">sm2私钥：</td>
+              <td style="text-align: left" valign="middle">
+                <textarea
+                  rows="2"
+                  cols="50"
+                  name="privkey"
+                  id="privkey"
+                ></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: auto; text-align: right">输入数据：</td>
+              <td style="text-align: left" valign="middle">
+                <textarea
+                  rows="5"
+                  cols="50"
+                  name="inputtext"
+                  id="inputtext"
+                ></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td style="width: auto; text-align: right">结果：</td>
+              <td style="text-align: left" valign="middle">
+                <textarea
+                  rows="5"
+                  cols="50"
+                  name="crypttext"
+                  id="crypttext"
+                ></textarea>
+              </td>
+            </tr>
+            <tr>
+              <td colspan="2" style="width: auto; text-align: center">
+
+                <input type="button" value="加密" id="btn_enc" />
+                <input type="button" value="解密" id="btn_dec" />
+              </td>
+            </tr>
+          </table>
+        </form>
+      </div>
+    </div>
+    <script>
+      /**
+       * 随机生成数据测试
+       */
+      function generate(len) {
+        var realLen = 0;
+        if (len != undefined && len > 0) {
+          realLen = len;
+        } else {
+          realLen = parseInt(Math.random() * 1024) + 1;
+        }
+        var data = new Array(realLen);
+
+        for (var i = 0; i < realLen; i++) {
+          data[i] = parseInt(Math.random() * 256);
+        }
+        return data;
+      }
+
+      /**
+       * 生成密钥
+       */
+      // $("#btn_genkey").click(function () {
+      //   var sm2 = new SM2();
+      //   var keyPair = sm2.generateKeyPairHex(); //得到的keypair结构：{'privkeyhex': hPrv, 'pubkeyhex': hPub}
+      //   $("#pubkey").val(keyPair["pubkeyhex"].toUpperCase());
+      //   $("#privkey").val(keyPair["privkeyhex"].toUpperCase());
+      // });
+
+      /*
+       * 测试加密
+       */
+      $("#btn_enc").click(function () {
+        var pubkey = $("#pubkey").val();
+        if (pubkey == "" || pubkey.length < 64) {
+          alert("公钥为空或错误");
+        }
+        var inputtext = $("#inputtext").val();
+        if (inputtext.length <= 0) {
+          alert("输入数据不能为空");
+        }
+        
+        // inputtext = Hex.hexToUtf8Str(Hex.utf8StrToHex(inputtext))
+        var cipher = SM.encrypt(inputtext, pubkey);
+
+        $("#crypttext").val(cipher);
+      });
+
+      /*
+       * 测试解密
+       */
+      $("#btn_dec").click(function () {
+        var privkey = $("#privkey").val();
+        if (privkey == "" || privkey.length < 32) {
+          alert("私钥为空或错误");
+        }
+        var inputtext = $("#inputtext").val();
+        if (inputtext.length <= 0) {
+          alert("输入数据不能为空");
+        }
+
+        //sm2加密
+        // var sm2 = new SM2();
+        // try{
+          // var plain = sm2Decrypt(inputtext, privkey);
+          var data = SM.decrypt(inputtext, privkey);
+          console.log(inputtext);
+          console.log(privkey);
+          console.log(data)
+          // var plain = sm2.decrypt(privkey, inputtext);
+          console.log()
+        // var utf8Str = Hex.hexToUtf8Str(plain);
+        $("#crypttext").val(data);
+        
+      });
+
+      
+    </script>
+  </body>
+</html>
